@@ -15,6 +15,7 @@
         "node": ">=18",
         "pnpm": ">=8"
     },
+	"packageManager": "pnpm>=8",
 	"devDependencies": {
 		"@skeletonlabs/skeleton": "^0.86.9",
 		"@sveltejs/adapter-auto": "^1.0.0",
