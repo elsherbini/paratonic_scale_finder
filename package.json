@@ -12,10 +12,9 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"engines": {
-        "node": ">=18",
-        "pnpm": ">=8"
+        "node": ">=18"
     },
-	"packageManager": "^8",
+	"packageManager": "^pnpm@7.22.0",
 	"devDependencies": {
 		"@skeletonlabs/skeleton": "^0.86.9",
 		"@sveltejs/adapter-auto": "^1.0.0",
