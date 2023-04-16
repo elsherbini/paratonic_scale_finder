@@ -46,3 +46,17 @@ export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, simplify
   console.log(noteLetters.map(pickNote(homeKey, targetChord, sharpsOrFlats, simplify)))
   return noteLetters.map(pickNote(homeKey, targetChord, sharpsOrFlats, simplify)) 
 }
+
+// Usage examples
+//makeParatonicScale( homeKey="C major",targetChord="Dbm6", sharpsOrFlats="b" ) 
+//makeParatonicScale( homeKey="C major",targetChord="E7", sharpsOrFlats="#" ) 
+//makeParatonicScale( homeKey="A minor",targetChord="E7", sharpsOrFlats="#" ) 
+
+//makeParatonicScale(homeKey="E major",targetChord="Abm6", sharpsOrFlats="b" )
+//makeParatonicScale(homeKey="E major",targetChord="Ab7", sharpsOrFlats="#" )
+//makeParatonicScale( homeKey="E major",targetChord="Ab7", sharpsOrFlats="b" ) 
+//makeParatonicScale( homeKey="Eb major",targetChord="D7", sharpsOrFlats="b" ) 
+//makeParatonicScale( homeKey="Eb major",targetChord="D7", sharpsOrFlats="#" ) 
+
+//makeParatonicScale( homeKey="B# major",targetChord="Cbm7b5", sharpsOrFlats="b" ) 
+//makeParatonicScale( homeKey="B# major",targetChord="Cbm7b5", sharpsOrFlats="b", simplify=true) 
