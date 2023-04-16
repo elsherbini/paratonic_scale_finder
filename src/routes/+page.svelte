@@ -15,7 +15,7 @@
 	$:  targetChord = [$targetChordTonic, $targetChordQuality].join("")
 	$:  targetChordNotes = Chord.get(targetChord).notes.join(" ")
 	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats).join(" ")
-    $: resultScaleLabel = Scale.detect(makeParatonicScale(homeKey, targetChord, $sharpsOrFlats), {'match':"exact"})
+    $: resultScaleLabel = Scale.detect(makeParatonicScale(homeKey, targetChord, $sharpsOrFlats), {'match':"exact"}).join(" ")
 	export const prerender = false;
 </script>
 
@@ -93,7 +93,7 @@
 </div>
 <div class="card p-4">
 	<label class="label"><span>Paratonic Scale</span></label>
-	<h3>{resultScale} {resultScaleLabel ? " = " : ""} {resultScaleLabel}</h3> <br>
+	<h3>{resultScale} = {resultScaleLabel !== "" ? resultScaleLabel : "unknown scale"}</h3> <br>
 	<label class="label"><span>Home Key</span></label>
 	<h3>{homeKey} = {homeKeyNotes}</h3>
 	<label class="label"><span>Target Chord</span></label>
