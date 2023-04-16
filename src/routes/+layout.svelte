@@ -2,7 +2,7 @@
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.postcss';
-	import { AppShell, AppBar, LightSwitch, TabGroup, Tab } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
 	let storeThree = writable('paratonic');
 </script>

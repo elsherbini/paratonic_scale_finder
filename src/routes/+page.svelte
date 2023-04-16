@@ -38,20 +38,20 @@
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]"><label class="label">
 	<span>Home Key</span></label>
 	<div class="input-group-shim">
-<RadioGroup display="flex" selected={homeKeyTonic}>
-	<RadioItem value="C">C</RadioItem>
-	<RadioItem value="{$sharpsOrFlats === "#" ? "C#" : "Db"}">{$sharpsOrFlats === "#" ? "C#" : "Db"}</RadioItem>
-	<RadioItem value="D">D</RadioItem>
-	<RadioItem value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</RadioItem>
-	<RadioItem value="E">E</RadioItem>
-	<RadioItem value="F">F</RadioItem>
-	<RadioItem value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</RadioItem>
-	<RadioItem value="G">G</RadioItem>
-	<RadioItem value="{$sharpsOrFlats === "#" ? "G#" : "Ab"}">{$sharpsOrFlats === "#" ? "G#" : "Ab"}</RadioItem>
-	<RadioItem value="A">A</RadioItem>
-	<RadioItem value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</RadioItem>
-	<RadioItem value="B">B</RadioItem>
-</RadioGroup>
+<select size="5" class="select" bind:value="{$homeKeyTonic}">
+	<option value="C">C</option>
+	<option value="{$sharpsOrFlats === "#" ? "C#" : "Db"}">{$sharpsOrFlats === "#" ? "C#" : "Db"}</option>
+	<option value="D">D</option>
+	<option value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</option>
+	<option value="E">E</option>
+	<option value="F">F</option>
+	<option value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</option>
+	<option value="G">G</option>
+	<option value="{$sharpsOrFlats === "#" ? "G#" : "Ab"}">{$sharpsOrFlats === "#" ? "G#" : "Ab"}</option>
+	<option value="A">A</option>
+	<option value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</option>
+	<option value="B">B</option>
+</select>
 </div>
 <div class="input-group-shim">
 <RadioGroup selected={homeKeyQuality}>
@@ -66,20 +66,20 @@
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 		<label class="label"><span>Target Chord</span></label>
 		<div class="input-group-shim">
-			<RadioGroup selected={targetChordTonic}>
-				<RadioItem value="C">C</RadioItem>
-				<RadioItem value="{$sharpsOrFlats === "#" ? "C#" : "Db"}">{$sharpsOrFlats === "#" ? "C#" : "Db"}</RadioItem>
-				<RadioItem value="D">D</RadioItem>
-				<RadioItem value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</RadioItem>
-				<RadioItem value="E">E</RadioItem>
-				<RadioItem value="F">F</RadioItem>
-				<RadioItem value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</RadioItem>
-				<RadioItem value="G">G</RadioItem>
-				<RadioItem value="{$sharpsOrFlats === "#" ? "G#" : "Ab"}">{$sharpsOrFlats === "#" ? "G#" : "Ab"}</RadioItem>
-				<RadioItem value="A">A</RadioItem>
-				<RadioItem value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</RadioItem>
-				<RadioItem value="B">B</RadioItem>
-			</RadioGroup>
+			<select size="5" class="select" bind:value="{$targetChordTonic}">
+				<option  value="C">C</option>
+				<option  value="{$sharpsOrFlats === "#" ? "C#" : "Db"}">{$sharpsOrFlats === "#" ? "C#" : "Db"}</option>
+				<option  value="D">D</option>
+				<option  value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</option>
+				<option  value="E">E</option>
+				<option  value="F">F</option>
+				<option  value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</option>
+				<option  value="G">G</option>
+				<option  value="{$sharpsOrFlats === "#" ? "G#" : "Ab"}">{$sharpsOrFlats === "#" ? "G#" : "Ab"}</option>
+				<option  value="A">A</option>
+				<option  value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</option>
+				<option  value="B">B</option>
+			</select>
 			</div>
 		<div class="input-group-shim">
 			<RadioGroup selected={targetChordQuality}>

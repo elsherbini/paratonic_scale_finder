@@ -15,6 +15,7 @@
         "node": ">=18"
     },
 	"devDependencies": {
+		"@tailwindcss/forms":"^0.5.3",
 		"@skeletonlabs/skeleton": "^0.86.9",
 		"@sveltejs/adapter-netlify": "^2.0.6",
 		"@sveltejs/kit": "^1.0.0",
