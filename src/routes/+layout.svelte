@@ -30,7 +30,7 @@
 			</TabGroup>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/barry-heresy" target="_blank" rel="noreferrer">GitHub</a>
+				<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
 				<LightSwitch />
 			</svelte:fragment>
 		</AppBar>
