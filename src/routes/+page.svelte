@@ -85,9 +85,9 @@
 			</div>
 		<div class="input-group-shim">
 			<RadioGroup selected={targetChordQuality}>
-				<RadioItem value="7">Dominant 7</RadioItem>
-				<RadioItem value="m6">Minor 6</RadioItem>
-				<RadioItem value="m7b5">Minor 7 b5</RadioItem>
+				<RadioItem value="7">Dom7</RadioItem>
+				<RadioItem value="m6">Min6</RadioItem>
+				<RadioItem value="m7b5">Min7b5</RadioItem>
 			</RadioGroup>
 			<label class="label"><span>Target Chord</span></label>
 			<h2>{targetChord} = {targetChordNotes}</h2>
