@@ -9,19 +9,23 @@
 	const targetChordTonic: Writable<string> = writable('E');
 	const targetChordQuality: Writable<string> = writable('7');
 	const sharpsOrFlats: Writable<string> = writable('#');
+	const startScaleOn: Writable<string> = writable('key');
+		
 
 	$:  homeKey = [$homeKeyTonic, $homeKeyQuality].join(" ")
 	$:  homeKeyNotes = Scale.get(homeKey).notes.join(" ")
 	$:  targetChord = [$targetChordTonic, $targetChordQuality].join("")
 	$:  targetChordNotes = Chord.get(targetChord).notes.join(" ")
-	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats).join(" ")
-    $: resultScaleLabel = Scale.detect(makeParatonicScale(homeKey, targetChord, $sharpsOrFlats), {'match':"exact"}).join(" ")
+	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn).join(" ")
+    $: resultScaleLabel = Scale.detect(makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn), {'match':"exact"}).join(" ")
 	export const prerender = false;
 </script>
 
 
-<section class="p-9 grid grid-cols-2 justify-start gap-4">
+<section class="py-3 px-9 grid grid-cols-2 justify-start gap-4">
 	<div p-6>
+
+
 	<div class="card p-3">
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<label class="label"><span>Sharps or Flats</span></label>
@@ -31,10 +35,7 @@
 					<RadioItem value="#">#</RadioItem>
 				</RadioGroup>
 			</div>
-		</div>
-	</div>
-
-	<div class="card p-3">
+			</div>
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]"><label class="label">
 	<span>Home Key</span></label>
 	<div class="input-group-shim">
@@ -53,15 +54,14 @@
 	<option value="B">B</option>
 </select>
 </div>
-<div class="input-group-shim">
 <RadioGroup selected={homeKeyQuality}>
 	<RadioItem value="major">Major</RadioItem>
 	<RadioItem value="minor">Minor</RadioItem>
 </RadioGroup>
+<h2>{homeKey} = {homeKeyNotes}</h2>
 </div>
 </div>
 </div>
-
 <div class="card p-3">
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 		<label class="label"><span>Target Chord</span></label>
@@ -72,6 +72,7 @@
 				<option  value="D">D</option>
 				<option  value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</option>
 				<option  value="E">E</option>
+				<option  value="{$sharpsOrFlats === "#" ? "E#" : "Fb"}">{$sharpsOrFlats === "#" ? "E#" : "Fb"}</option>
 				<option  value="F">F</option>
 				<option  value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</option>
 				<option  value="G">G</option>
@@ -79,6 +80,7 @@
 				<option  value="A">A</option>
 				<option  value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</option>
 				<option  value="B">B</option>
+				<option  value="{$sharpsOrFlats === "#" ? "B#" : "Cb"}">{$sharpsOrFlats === "#" ? "B#" : "Cb"}</option>
 			</select>
 			</div>
 		<div class="input-group-shim">
@@ -87,22 +89,31 @@
 				<RadioItem value="m6">Minor 6</RadioItem>
 				<RadioItem value="m7b5">Minor 7 b5</RadioItem>
 			</RadioGroup>
+			<label class="label"><span>Target Chord</span></label>
+			<h2>{targetChord} = {targetChordNotes}</h2>
 		</div>
 	</div>
 </div>
-</div>
-<div class="card p-4">
-	<label class="label"><span>Paratonic Scale</span></label>
-	<h3>{resultScale} = {resultScaleLabel !== "" ? resultScaleLabel : "unknown scale"}</h3> <br>
-	<label class="label"><span>Home Key</span></label>
-	<h3>{homeKey} = {homeKeyNotes}</h3>
-	<label class="label"><span>Target Chord</span></label>
-	<h3>{targetChord} = {targetChordNotes}</h3>
-	<label class="label"><span>Sharps or Flats</span></label>
-	<h3>{$sharpsOrFlats}</h3>
-</div>
 </section>
 
-<section class="p-9 grid grid-cols-1 justify-start gap-4">
-
+<section class="py-0 px-9 grid grid-cols-1 justify-start gap-4">
+	<div class="card p-4">
+		<label class="label"><span>Paratonic Scale</span></label>
+		<div class="input-group-shim">
+			<RadioGroup selected={startScaleOn}>
+				<RadioItem value="key">Tonic of key</RadioItem>
+				<RadioItem value="chord">Tonic of chord</RadioItem>
+			</RadioGroup>
+		<label class="label"><span>Paratonic Scale</span></label>
+		<h2>{resultScale} = {resultScaleLabel !== "" ? resultScaleLabel : "unknown scale"}</h2> <br>
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+			<label class="label"><span>Sharps or Flats</span></label>
+			<div class="input-group-shim">
+				<RadioGroup selected={sharpsOrFlats}>
+					<RadioItem value="b">b</RadioItem>
+					<RadioItem value="#">#</RadioItem>
+				</RadioGroup>
+			</div>
+		</div>
+	</div>
 </section>
