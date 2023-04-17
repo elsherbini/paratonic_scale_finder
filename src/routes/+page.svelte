@@ -27,30 +27,26 @@
 
 
 	<div class="card p-3">
-		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
-			<label class="label"><span>Sharps or Flats</span></label>
-			<div class="input-group-shim">
-				<RadioGroup selected={sharpsOrFlats}>
-					<RadioItem value="b">b</RadioItem>
-					<RadioItem value="#">#</RadioItem>
-				</RadioGroup>
-			</div>
-			</div>
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]"><label class="label">
 	<span>Home Key</span></label>
 	<div class="input-group-shim">
 <select size="5" class="select" bind:value="{$homeKeyTonic}">
 	<option value="C">C</option>
-	<option value="{$sharpsOrFlats === "#" ? "C#" : "Db"}">{$sharpsOrFlats === "#" ? "C#" : "Db"}</option>
+	<option value="C#">C#</option>
+	<option value="Db">Db</option>
 	<option value="D">D</option>
-	<option value="{$sharpsOrFlats === "#" ? "D#" : "Eb"}">{$sharpsOrFlats === "#" ? "D#" : "Eb"}</option>
+	<option value="D#">D#</option>
+	<option value="Eb">Eb</option>
 	<option value="E">E</option>
 	<option value="F">F</option>
-	<option value="{$sharpsOrFlats === "#" ? "F#" : "Gb"}">{$sharpsOrFlats === "#" ? "F#" : "Gb"}</option>
+	<option value="F#">F#</option>
+	<option value="Gb">Gb</option>
 	<option value="G">G</option>
-	<option value="{$sharpsOrFlats === "#" ? "G#" : "Ab"}">{$sharpsOrFlats === "#" ? "G#" : "Ab"}</option>
+	<option value="G#">G#</option>
+	<option value="Ab">Ab</option>
 	<option value="A">A</option>
-	<option value="{$sharpsOrFlats === "#" ? "A#" : "Bb"}">{$sharpsOrFlats === "#" ? "A#" : "Bb"}</option>
+	<option value="A#">A#</option>
+	<option value="Bb">Bb</option>
 	<option value="B">B</option>
 </select>
 </div>
@@ -58,12 +54,20 @@
 	<RadioItem value="major">Major</RadioItem>
 	<RadioItem value="minor">Minor</RadioItem>
 </RadioGroup>
+<label class="label"><span>Home Key</span></label>
 <h2>{homeKey} = {homeKeyNotes}</h2>
 </div>
 </div>
 </div>
 <div class="card p-3">
 	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
+		<label class="label"><span>Sharps or Flats</span></label>
+		<div class="input-group-shim">
+			<RadioGroup selected={sharpsOrFlats}>
+				<RadioItem value="b">b</RadioItem>
+				<RadioItem value="#">#</RadioItem>
+			</RadioGroup>
+		</div>
 		<label class="label"><span>Target Chord</span></label>
 		<div class="input-group-shim">
 			<select size="5" class="select" bind:value="{$targetChordTonic}">
@@ -99,13 +103,14 @@
 <section class="py-0 px-9 grid grid-cols-1 justify-start gap-4">
 	<div class="card p-4">
 		<label class="label"><span>Paratonic Scale</span></label>
+		<h2>{resultScale} = {resultScaleLabel !== "" ? resultScaleLabel : "unknown scale"}</h2> <br>
 		<div class="input-group-shim">
+			<label class="label"><span>Start Scale On</span></label>
 			<RadioGroup selected={startScaleOn}>
 				<RadioItem value="key">Tonic of key</RadioItem>
 				<RadioItem value="chord">Tonic of chord</RadioItem>
 			</RadioGroup>
-		<label class="label"><span>Paratonic Scale</span></label>
-		<h2>{resultScale} = {resultScaleLabel !== "" ? resultScaleLabel : "unknown scale"}</h2> <br>
+		
 		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto]">
 			<label class="label"><span>Sharps or Flats</span></label>
 			<div class="input-group-shim">
