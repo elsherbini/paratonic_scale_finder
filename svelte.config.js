@@ -3,6 +3,9 @@ import preprocess from "svelte-preprocess";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+	compilerOptions: {
+		accessors: true
+	},
 	kit: {
 		adapter: adapter({
 			// if true, will create a Netlify Edge Function rather

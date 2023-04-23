@@ -1,5 +1,5 @@
 // Import required functions from 'tonal' library
-import { Note, Scale, Chord, Pcset} from 'tonal';
+import {Voicing,  Note, Scale, Chord, Pcset} from 'tonal';
 
 // Create a paratonic scale from home key and target chord, with optional sharps or flats
 // simplify can help make sense of really weird keys or chords, like B# major
@@ -50,6 +50,7 @@ export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startSca
     ? simplify ? Note.get(Note.simplify(Scale.get(homeKey).tonic)).letter : Note.get(Scale.get(homeKey).tonic).letter
     : simplify ? Note.get(Note.simplify(Chord.get(targetChord).tonic)).letter : Note.get(Chord.get(targetChord).tonic).letter
   const noteLetters = rotateArray(["A", "B","C","D","E","F","G"], tonicLetter)
+  console.log(Voicing)
   return noteLetters.map(pickNoteFromNoteLetter(homeKey, targetChord, sharpsOrFlats, simplify)) 
 }
 
