@@ -1,24 +1,54 @@
 <script lang="ts">
 	import SampleLib from "../lib/svelte-sampler/SampleLib.svelte";
-	import AutoPlayer from "../lib/svelte-sampler/AutoPlayer.svelte";
-
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment'; 
+	import { page } from '$app/stores';
+	import { RadioGroup, RadioItem, RangeSlider } from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
 	import {makeParatonicScale} from '../lib/paratonic_scales'
 	import { Scale, Chord} from 'tonal';
+	import * as Tone from 'tone';
+	import MdiStop from 'virtual:icons/mdi/stop'
+	import MdiPlay from 'virtual:icons/mdi/play'
+	import MdiVolume from 'virtual:icons/mdi/volume-high'
 
 
 
-	let player;
+
+	let vol;
 	let sampler;
 	let inputId;
 	let reverbOn;
 	export let track;
+	let isPlaying =false;
+	let toneInitialized = false;
+	let bpm = 100;
+	let timeSig = "4/4"
 
-	const playMyNote = () =>{
-		console.log(sampler)
-		console.log(sampler.playMidiFile)
-		console.log(sampler.sampler)
+	async function initTone() {
+		await Tone.start();
+		toneInitialized = true;
+		
+    if (!Tone.getContext().disposed)
+        Tone.getContext().dispose();
+    // Tone.setContext(new Tone.OfflineContext(1, 0.5, 44100));
+    Tone.setContext(new Tone.Context({ latencyHint: 'interactive', lookAhead: 0 }));
+    // Tone.setContext(new Tone.Context({ latencyHint: 'playback', lookAhead: 5}));
+    Tone.getContext().transport.bpm.value = bpm;
+    Tone.getDestination().volume.value = vol;
+    Tone.getContext().transport.timeSignature = timeSig.split('/').map((t) => parseInt(t));
+	Tone.Transport.setLoopPoints("0m", "4m")
+}
+	
+const playButtonClick = () =>{
+		if (isPlaying) {
+			sampler.stop()
+			isPlaying = false;
+    	}
+    else {
+		isPlaying = true;
+		sampler.paratonicExample(homeKey, targetChord, resultScale)
+    	}
 	}
 
   const urls = {
@@ -97,20 +127,42 @@
   };
 
 
-	const homeKeyTonic: Writable<string> = writable('C');
-	const homeKeyQuality: Writable<string> = writable('major');
-	const targetChordTonic: Writable<string> = writable('E');
-	const targetChordQuality: Writable<string> = writable('7');
-	const sharpsOrFlats: Writable<string> = writable('#');
-	const startScaleOn: Writable<string> = writable('key');
-		
+  	
+	const urlKey = $page.url.searchParams.get('k') || "C major"
+	const urlChord = $page.url.searchParams.get('c') || "E7"
+	const urlSharpsOrFlats = $page.url.searchParams.get('a') || "#"
+	const urlStartScaleOn = $page.url.searchParams.get('s') || "chord"
+	const urlNoAug2nds = $page.url.searchParams.get('n') || "no"
+	
+	const homeKeyTonic: Writable<string> = writable(urlKey.split(' ')[0]);
+	const homeKeyQuality: Writable<string> = writable(urlKey.split(' ')[1]);
+	const targetChordTonic: Writable<string> = writable(Chord.get(urlChord).tonic || "E");
+	const targetChordQuality: Writable<string> = writable(Chord.tokenize(urlChord).slice(-1)[0]);
+	const sharpsOrFlats: Writable<string> = writable(urlSharpsOrFlats);
+	const startScaleOn: Writable<string> = writable(urlStartScaleOn);
+    const noAug2nds: Writable<string> = writable(urlNoAug2nds);
 
 	$:  homeKey = [$homeKeyTonic, $homeKeyQuality].join(" ")
 	$:  homeKeyNotes = Scale.get(homeKey).notes.join(" ")
 	$:  targetChord = [$targetChordTonic, $targetChordQuality].join("")
 	$:  targetChordNotes = Chord.get(targetChord).notes.join(" ")
-	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn).join(" ")
-	export const prerender = false;
+	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn, $noAug2nds === 'no').join(" ")
+	$: handleVol(vol)
+
+
+	const handleVol = () => {
+		if (browser) {
+			if (toneInitialized) {
+				Tone.getDestination().volume.value = vol;
+			}
+			else {
+				initTone()
+			}
+		}
+	}
+	onMount(() => {
+		initTone()
+	});
 </script>
 
 
@@ -203,9 +255,6 @@
 
 <div class="card p-4 flex flex-row">
 	<div class="basis-2/3">
-		<button type="button" class="btn filled-primary"  on:click={() => sampler.playMidiFile(`/midi/vb_improv_1.midi`)}
-			>Play it</button
-		  >
 	<label class="label"><span>Paratonic Scale</span></label>
 	<h2>{resultScale}</h2> <br>
 	<div class="input-group-shim">
@@ -213,6 +262,12 @@
 		<RadioGroup selected={startScaleOn}>
 			<RadioItem value="key">Key tonic</RadioItem>
 			<RadioItem value="chord">Chord root</RadioItem>
+		</RadioGroup>
+
+		<label class="label"><span>Remove augmented 2nds?</span></label>
+		<RadioGroup selected={noAug2nds}>
+			<RadioItem value={"no"}>No A2nds</RadioItem>
+			<RadioItem value={"yes"}>A2nds</RadioItem>
 		</RadioGroup>
 	
 	<div class="input-group input-group-divider ">
@@ -227,6 +282,19 @@
 </div>
 </div>
 <div class="basis-1/3">
-	<AutoPlayer  sampler={sampler} bind:this={player}/>
+	<label class="label"><span>Play the scale</span></label>
+	<div class="input-group input-group-divider ">
+		<button type="button" class="btn btn-small btn-filled-secondary border-token rounded-token text-justify"  on:click={playButtonClick}> {#if isPlaying} <MdiStop />Stop
+			{:else}<MdiPlay />Play{/if}</button>
+
+			<label class="label"><span> Volume </span></label>
+			<RangeSlider name="range-slider" accent='accent-surface-900 dark:accent-surface-50' bind:value={vol} min={-30} max={0} step={1}>
+				<div class="flex justify-between items-center">
+					<div class="font-bold"><MdiVolume /></div>
+					<div class="text-xs">{vol}db</div>
+				</div>
+			</RangeSlider>
+		</div>
+</div>
 </div>
 </section>

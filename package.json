@@ -33,7 +33,9 @@
 		"tonal":"^4.6.9",
 		"webmidi":"^3.0.25",
 		"@tonejs/midi": "^2.0.28",
-		"tone": "^14.7.77"
+		"tone": "^14.7.77",
+		"@iconify-json/mdi": "^1.1.50",
+		"unplugin-icons": "^0.16.1"
 	},
 	"type": "module"
 }

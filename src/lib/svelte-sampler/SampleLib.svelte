@@ -3,11 +3,14 @@
 </script>
 
 <script>import * as pkg from '@tonejs/midi';
+import {Midi as tonalMidi, Interval, Note, Scale, Chord, Pcset} from 'tonal';
 const { Midi } = pkg;
 import { onMount } from 'svelte';
 import * as Tone from 'tone';
 import { Input, WebMidi } from 'webmidi';
 import { generateKeys } from './KeyMap';
+
+
 let isLoadingSamples = false;
 let samplesLoaded = false;
 export let sampler;
@@ -124,7 +127,7 @@ export const playMidiFile = async (midiFile) => {
         });
         // midi.tracks[0].controlChanges[64].forEach((sustain) => {
         // 	Tone.getContext().transport.scheduleOnce((time) => {
-        // 		console.log('pedal!', sustain);
+        
         // 		if (sustain.value === 1) {
         // 			isSustaining = true;
         // 			// Add any existing notes to array
@@ -134,12 +137,12 @@ export const playMidiFile = async (midiFile) => {
         // 			notesSustainedToLetGo = notesSustainedToLetGo;
         // 		} else if (sustain.value === 0) {
         // 			isSustaining = false;
-        // 			console.log('notes sustained', notesSustainedToLetGo);
-        // 			console.log('notes playinh', notesPlaying);
+        
+        
         // 			sampler.triggerRelease(notesSustainedToLetGo);
         // 			notesSustainedToLetGo = notesSustainedToLetGo.filter((n) => notesPlaying.includes(n));
         // 			notesSustainedToLetGo = notesSustainedToLetGo;
-        // 			console.log('notes sustained after', notesSustainedToLetGo);
+        
         // 		}
         // 	}, now + sustain.time);
         // });
@@ -148,21 +151,65 @@ export const playMidiFile = async (midiFile) => {
 };
 
 
+const simplifyNoteObject = (noteObject) => {
+  
+  noteObject['name'] =  Note.simplify(tonalMidi.midiToNoteName(Note.get(noteObject['name']).midi, {sharps: true}))
+  return noteObject
+}
+
 const getExampleNotes = (homeKey, targetChord, resultScale) => {
+  const homeKeyTonic = Scale.get(homeKey).tonic
+  const homeKeyAlias = Scale.get(homeKey).aliases[0]
+  const homeChordNotes = [1, 3,5,7].map(Scale.degrees(homeKeyTonic.concat("3 ").concat(homeKeyAlias))).map((note, i) => { return {time: 0, name: note, velocity: i ===0 ? 0.9 : 0.6, duration: 4.3}})
+  const targetChordTonic = Chord.get(targetChord).tonic
+  const targetChordAlias = Chord.get(targetChord).aliases[0]
+  const targetChordNotes = Chord.getChord(targetChordAlias,targetChordTonic.concat('3')).notes.map((note, i) => { return {time: 4.4, name:  note, velocity: i ===0 ? 0.9 : 0.6, duration: 4.2}})
+  
+  const homeBassNotes = [{time: 0, name: homeKeyTonic?.concat('2'), velocity: 0.9, duration: 4.2}]
+  const targetBassNotes = [{time: 4.4, name: targetChordTonic?.concat('2'), velocity: 0.9, duration: 4.2}]
+  const homeScaleNotes =  [1,2,3,4,5,6,7,8].map(Scale.degrees(homeKeyTonic?.concat('4 ').concat(homeKeyAlias))).map((note, i) => { return {time: 0.8+i*0.4, name: note, velocity:1, duration: i === 7 ? 0.7 : 0.37 }})
+  
+
+
+  
+  const rotateOctave = (intervals, k) => {
+    let newIntervals = [...intervals]
+    for (let i = 0; i < k; i++) {
+      newIntervals.push(Interval.add(newIntervals.shift(), '8P'));
+    }
+    return newIntervals
+  }
+
+  const resultScaleNotes = rotateOctave(
+    Pcset.get(resultScale.split(" ")).intervals,
+    ['C', 'D','E','F','G','A','B'].findIndex((e) => e === resultScale.split(" ")[0].slice(0,1))
+  )
+  .map(Note.transposeFrom("C4"))
+  resultScaleNotes.push(Note.transposeBy('8P')(resultScaleNotes[0]))
+const resultScaleNotesWOctave = resultScaleNotes.map((note, i) => { return {time: 4.4+0.8+ i*0.4, name: note, velocity:1, duration: i === 7 ? 0.7 : 0.37 }})
+
+  const allNotes = homeBassNotes
+  .concat(targetBassNotes)
+  .concat(homeChordNotes)
+  .concat(targetChordNotes)
+  .concat(homeScaleNotes)
+  .concat(resultScaleNotesWOctave)
+  .map((noteObject) => simplifyNoteObject(noteObject))
+
+  return(allNotes)
   
 }
 
 export const paratonicExample = async (homeKey, targetChord, resultScale) => {
     if (!samplesLoaded)
         await init();
-    const midi = await Midi.fromUrl(midiFile);
     const example_notes = getExampleNotes(homeKey, targetChord, resultScale)
     let now = Tone.getContext().transport.now();
     const drawNow = Tone.Draw.now();
     const compensation = 0.07;
     Tone.getContext().transport.on('start', (time) => {
         now = time;
-        midi.tracks[0].notes.forEach((note, idx) => {
+        example_notes.forEach((note, idx) => {
             Tone.getContext().transport.scheduleOnce((time) => {
                 // Note down
                 sampler.triggerAttack(note.name, Tone.now(), note.velocity);
@@ -183,7 +230,7 @@ export const paratonicExample = async (homeKey, targetChord, resultScale) => {
                 Tone.Draw.schedule(function () {
                     notesPlaying.splice(notesPlaying.findIndex((n) => note.name === n), 1);
                     notesPlaying = notesPlaying;
-                    if (idx === midi.tracks[0].notes.length - 1) {
+                    if (idx === example_notes.length - 1) {
                         stop();
                     }
                 }, Tone.Draw.now() + note.duration - compensation);
@@ -191,7 +238,7 @@ export const paratonicExample = async (homeKey, targetChord, resultScale) => {
         });
         // midi.tracks[0].controlChanges[64].forEach((sustain) => {
         // 	Tone.getContext().transport.scheduleOnce((time) => {
-        // 		console.log('pedal!', sustain);
+        
         // 		if (sustain.value === 1) {
         // 			isSustaining = true;
         // 			// Add any existing notes to array
@@ -201,12 +248,12 @@ export const paratonicExample = async (homeKey, targetChord, resultScale) => {
         // 			notesSustainedToLetGo = notesSustainedToLetGo;
         // 		} else if (sustain.value === 0) {
         // 			isSustaining = false;
-        // 			console.log('notes sustained', notesSustainedToLetGo);
-        // 			console.log('notes playinh', notesPlaying);
+        
+        
         // 			sampler.triggerRelease(notesSustainedToLetGo);
         // 			notesSustainedToLetGo = notesSustainedToLetGo.filter((n) => notesPlaying.includes(n));
         // 			notesSustainedToLetGo = notesSustainedToLetGo;
-        // 			console.log('notes sustained after', notesSustainedToLetGo);
+        
         // 		}
         // 	}, now + sustain.time);
         // });
@@ -239,7 +286,7 @@ $: notesSustainedDisplay = [];
 $: soloNotesPlaying = [];
 
   export const  playNote = async  (note, duration, time) => {
-    console.log("playNote")
+    
     if (sampler) {
         sampler.triggerAttack(note, time);
         sampler.triggerRelease(note, duration);
@@ -303,19 +350,20 @@ async function initSampleLibrary() {
     });
 }
 async function initTone() {
-    await Tone.start();
-    if (!Tone.getContext().disposed)
-        Tone.getContext().dispose();
-    // Tone.setContext(new Tone.OfflineContext(1, 0.5, 44100));
-    Tone.setContext(new Tone.Context({ latencyHint: 'interactive', lookAhead: 0 }));
-    // Tone.setContext(new Tone.Context({ latencyHint: 'playback', lookAhead: 5}));
-    Tone.getContext().transport.bpm.value = bpm;
-    Tone.getDestination().volume.value = vol;
-    Tone.getContext().transport.timeSignature = timeSig.split('/').map((t) => parseInt(t));
-}
+		await Tone.start();
+		if (!Tone.getContext().disposed) Tone.getContext().dispose();
+		// Tone.setContext(new Tone.OfflineContext(1, 0.5, 44100));
+		Tone.setContext(new Tone.Context({ latencyHint: 'interactive', lookAhead: 0 }));
+		// Tone.setContext(new Tone.Context({ latencyHint: 'playback', lookAhead: 5}));
+		Tone.getContext().transport.bpm.value = bpm;
+		Tone.getDestination().volume.value = vol;
+		Tone.getContext().transport.timeSignature = timeSig.split('/').map((t) => parseInt(t));
+    Tone.Transport.setLoopPoints("0m", "4m")
+	}
+
 let isDragging = false;
 function onStopDrag() {
-    sampler?.releaseAll();
+    sampler?.releaseAll("+3");
     isDragging = false;
 }
 </script>

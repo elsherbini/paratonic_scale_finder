@@ -1,9 +1,10 @@
 // Import required functions from 'tonal' library
-import {Voicing,  Note, Scale, Chord, Pcset} from 'tonal';
+import { loop } from 'svelte/internal';
+import {Note, Scale, Chord, Pcset, Interval} from 'tonal';
 
 // Create a paratonic scale from home key and target chord, with optional sharps or flats
 // simplify can help make sense of really weird keys or chords, like B# major
-export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startScaleOn, simplify) {
+export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startScaleOn, noAug2nds, simplify) {
   // note this function probably breaks if the tonic is a double accidental
   const getSharpsOrFlats = (notes) => {
     return notes.map((note) => Note.get(note).acc) // Note.acc returns "" for natural, "#" for sharp, "b" for flat
@@ -40,9 +41,36 @@ export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startSca
       : note_letter in scaleTones // is the note letter in the scaleTones object?
       ? scaleTones[note_letter]  // if so pick that note
       : !Pcset.isNoteIncludedIn(Scale.get(homeKey).notes)(note_letter) // is the note_letter included in the homeScale (no accidental?)
-      ? note_letter // if not, pick that note letter as the ntoe
+      ? note_letter // if not, pick that note letter as the note
       : Note.get(note_letter + sharpsOrFlats).name // otherwise, pick that note letter with the correct accidental
   }
+
+  const removeAug2nds = (targetScale,sharpsOrFlats ) => {
+    let loopedScale = [...targetScale , targetScale[0]] 
+    let newScale = []
+    newScale.push(loopedScale[0])
+    for ( let i=1; i<=6; i++) {
+      let sharpenThis = Interval.distance(loopedScale[i],loopedScale[i+1] ) == "2A" && sharpsOrFlats == "#"
+      let flattenThis = Interval.distance(loopedScale[i-1],loopedScale[i] ) == "2A" && sharpsOrFlats == "b"
+      let targetLetter = Note.get(loopedScale[i]).letter
+      if (sharpenThis){
+        if (Note.enharmonic(Note.transposeBy("2m")(loopedScale[i])).letter == targetLetter) {
+          newScale.push(Note.enharmonic(Note.transposeBy("2m")(loopedScale[i])))
+        } else {
+          newScale.push(Note.enharmonic(Note.transposeBy("2m")(loopedScale[i]),loopedScale[i].concat('#')))
+        }
+      } else if(flattenThis) {
+        if (Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i])).letter == targetLetter) {
+          newScale.push(Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i])))
+        } else {
+          newScale.push(Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i]),loopedScale[i].concat('b')))
+        }
+      } else {
+        newScale.push(loopedScale[i])
+      }
+  }
+  return newScale
+}
 
   // these lines just rotate the notes so the scale starts on the tonic of the home key
   const rotateArray = (arr, query) => arr.concat(arr.splice(0, arr.indexOf(query)));
@@ -50,8 +78,9 @@ export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startSca
     ? simplify ? Note.get(Note.simplify(Scale.get(homeKey).tonic)).letter : Note.get(Scale.get(homeKey).tonic).letter
     : simplify ? Note.get(Note.simplify(Chord.get(targetChord).tonic)).letter : Note.get(Chord.get(targetChord).tonic).letter
   const noteLetters = rotateArray(["A", "B","C","D","E","F","G"], tonicLetter)
-  console.log(Voicing)
-  return noteLetters.map(pickNoteFromNoteLetter(homeKey, targetChord, sharpsOrFlats, simplify)) 
+  const targetScale =  noteLetters.map(pickNoteFromNoteLetter(homeKey, targetChord, sharpsOrFlats, simplify)) 
+
+  return noAug2nds ? removeAug2nds(targetScale,sharpsOrFlats ) : targetScale
 }
 
 // Usage examples
