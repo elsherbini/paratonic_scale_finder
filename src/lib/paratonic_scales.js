@@ -46,24 +46,27 @@ export function makeParatonicScale(homeKey, targetChord, sharpsOrFlats, startSca
   }
 
   const removeAug2nds = (targetScale,sharpsOrFlats ) => {
-    let loopedScale = [...targetScale , targetScale[0]] 
+    let loopedScale = [targetScale[6], ...targetScale , targetScale[0]] 
     let newScale = []
-    newScale.push(loopedScale[0])
-    for ( let i=1; i<=6; i++) {
+    for ( let i=1; i<=7; i++) {
       let sharpenThis = Interval.distance(loopedScale[i],loopedScale[i+1] ) == "2A" && sharpsOrFlats == "#"
       let flattenThis = Interval.distance(loopedScale[i-1],loopedScale[i] ) == "2A" && sharpsOrFlats == "b"
       let targetLetter = Note.get(loopedScale[i]).letter
       if (sharpenThis){
         if (Note.enharmonic(Note.transposeBy("2m")(loopedScale[i])).letter == targetLetter) {
           newScale.push(Note.enharmonic(Note.transposeBy("2m")(loopedScale[i])))
-        } else {
+        } else if (Note.enharmonic(Note.transposeBy("2m")(loopedScale[i]),loopedScale[i].concat('#')).letter == targetLetter ){
           newScale.push(Note.enharmonic(Note.transposeBy("2m")(loopedScale[i]),loopedScale[i].concat('#')))
+        } else {
+          newScale.push(Note.enharmonic(Note.transposeBy("2m")(loopedScale[i])))
         }
       } else if(flattenThis) {
         if (Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i])).letter == targetLetter) {
           newScale.push(Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i])))
-        } else {
+        } else if (Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i]),loopedScale[i].concat('b')).letter == targetLetter ){
           newScale.push(Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i]),loopedScale[i].concat('b')))
+        } else {
+          newScale.push(Note.enharmonic(Note.transposeBy("-2m")(loopedScale[i])))
         }
       } else {
         newScale.push(loopedScale[i])
