@@ -20,7 +20,6 @@
 	let sampler;
 	let inputId;
 	let reverbOn;
-	export let track;
 	let isPlaying =false;
 	let toneInitialized = false;
 	let bpm = 100;
@@ -148,6 +147,7 @@ const playButtonClick = () =>{
 	$:  targetChord = [$targetChordTonic, $targetChordQuality].join("")
 	$:  targetChordNotes = Chord.get(targetChord).notes.join(" ")
 	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn, $noAug2nds === 'no').join(" ")
+	$: resultScaleLabel = Scale.detect(resultScale.split(" "), {match:"exact"})
 	$: handleVol(vol)
 
 
@@ -204,7 +204,7 @@ const playButtonClick = () =>{
 <div class="card p-4 flex flex-row">
 	<div class="basis-2/3">
 <label class="label"><span>Home Key</span></label>
-<h2>{homeKey} = <br> {homeKeyNotes}</h2>
+<h3>{homeKey} </h3><h2>{homeKeyNotes}</h2>
 </div>
 
 <div class="basis-1/3">
@@ -270,7 +270,7 @@ const playButtonClick = () =>{
 <div class="card p-4 flex flex-row">
 	<div class="basis-2/3">
 	<label class="label"><span>Paratonic Scale</span></label>
-	<h2>{resultScale}</h2> <br>
+	<h3>{resultScaleLabel}</h3> <h2>{resultScale}</h2> 
 	<div class="input-group-shim">
 		<label class="label"><span>Start Scale On</span></label>
 		<RadioGroup selected={startScaleOn}>
