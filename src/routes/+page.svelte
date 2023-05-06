@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SampleLib from "../lib/svelte-sampler/SampleLib.svelte";
+	import HypercubeGrid from "../lib/components/HypercubeGrid.svelte";
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment'; 
 	import { page } from '$app/stores';
@@ -193,11 +194,22 @@ const playButtonClick = () =>{
 </select>
 </div>
 <RadioGroup selected={homeKeyQuality}>
+	<RadioItem value="lydian">Lydian</RadioItem>
 	<RadioItem value="major">Major</RadioItem>
+	<RadioItem value="mixolydian">Mixolydian</RadioItem>
+	<RadioItem value="dorian">Dorian</RadioItem>
 	<RadioItem value="minor">Minor</RadioItem>
+	<RadioItem value="phrygian">Phrygian</RadioItem>
 </RadioGroup>
+<div class="card p-4 flex flex-row">
+	<div class="basis-2/3">
 <label class="label"><span>Home Key</span></label>
 <h2>{homeKey} = <br> {homeKeyNotes}</h2>
+</div>
+
+<div class="basis-1/3">
+</div>
+</div>
 </div>
 </div>
 <div class="card p-3">
@@ -230,6 +242,8 @@ const playButtonClick = () =>{
 			</div>
 		<div class="input-group-shim">
 			<RadioGroup selected={targetChordQuality}>
+				<RadioItem value="maj">major</RadioItem>
+				<RadioItem value="m">minor</RadioItem>
 				<RadioItem value="7">Dom7</RadioItem>
 				<RadioItem value="m6">m6</RadioItem>
 				<RadioItem value="m7b5">m7b5</RadioItem>
@@ -240,7 +254,7 @@ const playButtonClick = () =>{
 	</div>
 </div>
 </section>
-<section class="py-0 px-3 grid grid-cols-1 justify-start gap-4">
+<section class="py-0 px-3 justify-start gap-4">
 			<SampleLib
 			  theme="dark"
 			  samplesPath="/audio/rhodes/"

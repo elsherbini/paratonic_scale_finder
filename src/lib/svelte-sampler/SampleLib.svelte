@@ -159,7 +159,8 @@ const simplifyNoteObject = (noteObject) => {
 
 const getExampleNotes = (homeKey, targetChord, resultScale) => {
   const homeKeyTonic = Scale.get(homeKey).tonic
-  const homeKeyAlias = Scale.get(homeKey).aliases[0]
+  console.log(homeKey, Scale.get(homeKey), Scale.get(homeKey).aliases)
+  const homeKeyAlias = Scale.get(homeKey).type
   const homeChordNotes = [1, 3,5,7].map(Scale.degrees(homeKeyTonic.concat("3 ").concat(homeKeyAlias))).map((note, i) => { return {time: 0, name: note, velocity: i ===0 ? 0.9 : 0.6, duration: 4.3}})
   const targetChordTonic = Chord.get(targetChord).tonic
   const targetChordAlias = Chord.get(targetChord).aliases[0]
