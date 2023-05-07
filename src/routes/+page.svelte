@@ -1,11 +1,13 @@
 <script lang="ts">
 	import SampleLib from "../lib/svelte-sampler/SampleLib.svelte";
 	import HypercubeGrid from "../lib/components/HypercubeGrid.svelte";
+	import { homeKey, targetChord, resultScale, startScaleOn } from '$lib/stores.js'
+	import ParatonicGrid from "../lib/components/ParatonicGrid.svelte";
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment'; 
 	import { page } from '$app/stores';
 	import { RadioGroup, RadioItem, RangeSlider } from '@skeletonlabs/skeleton';
-	import { writable, type Writable } from 'svelte/store';
+	import { get, writable, type Writable } from 'svelte/store';
 	import {makeParatonicScale} from '../lib/paratonic_scales'
 	import { Scale, Chord} from 'tonal';
 	import * as Tone from 'tone';
@@ -47,7 +49,7 @@ const playButtonClick = () =>{
     	}
     else {
 		isPlaying = true;
-		sampler.paratonicExample(homeKey, targetChord, resultScale)
+		sampler.paratonicExample($homeKey, $targetChord, $resultScale)
     	}
 	}
 
@@ -139,15 +141,14 @@ const playButtonClick = () =>{
 	const targetChordTonic: Writable<string> = writable(Chord.get(urlChord).tonic || "E");
 	const targetChordQuality: Writable<string> = writable(Chord.tokenize(urlChord).slice(-1)[0]);
 	const sharpsOrFlats: Writable<string> = writable(urlSharpsOrFlats);
-	const startScaleOn: Writable<string> = writable(urlStartScaleOn);
     const noAug2nds: Writable<string> = writable(urlNoAug2nds);
-
-	$:  homeKey = [$homeKeyTonic, $homeKeyQuality].join(" ")
-	$:  homeKeyNotes = Scale.get(homeKey).notes.join(" ")
-	$:  targetChord = [$targetChordTonic, $targetChordQuality].join("")
-	$:  targetChordNotes = Chord.get(targetChord).notes.join(" ")
-	$: resultScale = makeParatonicScale(homeKey, targetChord, $sharpsOrFlats, $startScaleOn, $noAug2nds === 'no').join(" ")
-	$: resultScaleLabel = Scale.detect(resultScale.split(" "), {match:"exact"})
+	
+	$:  homeKey.set([$homeKeyTonic, $homeKeyQuality].join(" "))
+	$:  homeKeyNotes = Scale.get($homeKey).notes.join(" ")
+	$:  targetChord .set([$targetChordTonic, $targetChordQuality].join(""))
+	$:  targetChordNotes = Chord.get($targetChord).notes.join(" ")
+	$: resultScale.set(makeParatonicScale($homeKey, $targetChord, $sharpsOrFlats, $startScaleOn, $noAug2nds === 'no').join(" "))
+	$: resultScaleLabel = Scale.detect($resultScale.split(" "), {match:"exact"})
 	$: handleVol(vol)
 
 
@@ -204,7 +205,7 @@ const playButtonClick = () =>{
 <div class="card p-4 flex flex-row">
 	<div class="basis-2/3">
 <label class="label"><span>Home Key</span></label>
-<h3>{homeKey} </h3><h2>{homeKeyNotes}</h2>
+<h3>{$homeKey} </h3><h2>{homeKeyNotes}</h2>
 </div>
 
 <div class="basis-1/3">
@@ -249,66 +250,70 @@ const playButtonClick = () =>{
 				<RadioItem value="m7b5">m7b5</RadioItem>
 			</RadioGroup>
 			<label class="label"><span>Target Chord</span></label>
-			<h2>{targetChord} = {targetChordNotes}</h2>
+			<h2>{$targetChord} = {targetChordNotes}</h2>
 		</div>
 	</div>
 </div>
 </section>
 <section class="py-0 px-3 justify-start gap-4">
-			<SampleLib
-			  theme="dark"
-			  samplesPath="/audio/rhodes/"
-			  {inputId}
-			  {urls}
-			  bind:this={sampler}
-			  bind:reverbOn
-			/>
+	<SampleLib
+	  theme="dark"
+	  samplesPath="/audio/rhodes/"
+	  {inputId}
+	  {urls}
+	  bind:this={sampler}
+	  bind:reverbOn
+	/>
 </section>
-<section class="py-6 px-3 grid grid grid-cols-1 md:grid-cols-2 justify-start gap-4">
-
-
-<div class="card p-4 flex flex-row">
-	<div class="basis-2/3">
-	<label class="label"><span>Paratonic Scale</span></label>
-	<h3>{resultScaleLabel}</h3> <h2>{resultScale}</h2> 
-	<div class="input-group-shim">
-		<label class="label"><span>Start Scale On</span></label>
-		<RadioGroup selected={startScaleOn}>
-			<RadioItem value="key">Key tonic</RadioItem>
-			<RadioItem value="chord">Chord root</RadioItem>
-		</RadioGroup>
-
-		<label class="label"><span>Remove augmented 2nds?</span></label>
-		<RadioGroup selected={noAug2nds}>
-			<RadioItem value={"no"}>No A2nds</RadioItem>
-			<RadioItem value={"yes"}>A2nds</RadioItem>
-		</RadioGroup>
+<section class="py-3 px-3 content-center">
+	<div class="flex flex-row justify-center">
+	<div class="card px-4 py-4 basis-full xl:basis-2/5 lg:basis-1/2 ">
+		<div class="card py-2 px-2 grid grid-rows-3 grid-cols-2">
+	<div class="col-start-2 row-start-2 row-span-2">
+		<label class="label"><span>Play the scale</span></label>
+		<div class="input-group input-group-divider ">
+			<button type="button" class="btn btn-small btn-filled-secondary border-token rounded-token text-justify"  on:click={playButtonClick}> {#if isPlaying} <MdiStop />Stop
+				{:else}<MdiPlay />Play{/if}</button>
 	
-	<div class="input-group input-group-divider ">
-		<label class="label"><span>Sharps or Flats</span></label>
-		<div class="input-group-shim">
-			<RadioGroup selected={sharpsOrFlats}>
-				<RadioItem value="b">b</RadioItem>
-				<RadioItem value="#">#</RadioItem>
-			</RadioGroup>
-		</div>
-	</div>
-</div>
-</div>
-<div class="basis-1/3">
-	<label class="label"><span>Play the scale</span></label>
-	<div class="input-group input-group-divider ">
-		<button type="button" class="btn btn-small btn-filled-secondary border-token rounded-token text-justify"  on:click={playButtonClick}> {#if isPlaying} <MdiStop />Stop
-			{:else}<MdiPlay />Play{/if}</button>
-
-			<label class="label"><span> Volume </span></label>
-			<RangeSlider name="range-slider" accent='accent-surface-900 dark:accent-surface-50' bind:value={vol} min={-30} max={0} step={1}>
-				<div class="flex justify-between items-center">
-					<div class="font-bold"><MdiVolume /></div>
-					<div class="text-xs">{vol}db</div>
+				<label class="label"><span> Volume </span></label>
+				<RangeSlider name="range-slider" accent='accent-surface-900 dark:accent-surface-50' bind:value={vol} min={-30} max={0} step={1}>
+					<div class="flex justify-between items-center">
+						<div class="font-bold"><MdiVolume /></div>
+						<div class="text-xs">{vol}db</div>
+					</div>
+				</RangeSlider>
+				<div class="input-group input-group-divider ">
+					<label class="label"><span>Sharps or Flats</span></label>
+					<div class="input-group-shim">
+						<RadioGroup selected={sharpsOrFlats}>
+							<RadioItem value="b">b</RadioItem>
+							<RadioItem value="#">#</RadioItem>
+						</RadioGroup>
+					</div>
 				</div>
-			</RangeSlider>
+			</div>
 		</div>
-</div>
+			<div class="py-4 row-start-1 col-start-1 col-span-2">
+			<label class="label"><span> How the scale is made </span></label>
+			<ParatonicGrid />
+		</div>
+		<div class="row-start-2 col-start-1 row-span-2">
+		<label class="label"><span>Paratonic Scale</span></label>
+		<h3>{resultScaleLabel}</h3> <h2>{$resultScale}</h2> 
+		<div class="input-group-shim ">
+			<label class="label"><span>Start Scale On</span></label>
+			<RadioGroup selected={startScaleOn}>
+				<RadioItem value="key">Key tonic</RadioItem>
+				<RadioItem value="chord">Chord root</RadioItem>
+			</RadioGroup>
+	
+			<label class="label"><span>Remove augmented 2nds?</span></label>
+			<RadioGroup selected={noAug2nds}>
+				<RadioItem value={"no"}>No A2nds</RadioItem>
+				<RadioItem value={"yes"}>A2nds</RadioItem>
+			</RadioGroup>
+	</div>
+	</div>
+	</div>
 </div>
 </section>

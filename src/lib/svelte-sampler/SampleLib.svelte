@@ -369,7 +369,7 @@ function onStopDrag() {
 }
 </script>
 
-<div class="container" on:mouseup={onStopDrag}>
+<div class="container  overflow-auto" on:mouseup={onStopDrag}>
 	{#if isLoadingSamples}
 		<p style="position: absolute;margin: auto;top: -3em;">Loading samples...</p>
 	{/if}
