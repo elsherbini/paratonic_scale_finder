@@ -252,7 +252,7 @@ const playButtonClick = () =>{
 	</div>
 </div>
 </section>
-<section class="overflow-auto py-0 px-3 justify-start gap-4">
+<section class="max-lg:overflow-x-auto py-0 px-3 justify-start gap-4">
 	<SampleLib
 	  theme="dark"
 	  samplesPath="/audio/rhodes/"
