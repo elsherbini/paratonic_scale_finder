@@ -36,20 +36,11 @@ $: scaleNotes = getNotesFromString($resultScale, transposeChroma);
 
 <div class="flex flex-row">
 <div class="basis1/6 grid grid-rows-3 divide-y-4">
-    <div style="display:table-cell" class="text-right align-bottom">{$homeKey}</div>
-    <div style="display:table-cell" class="text-right align-bottom">Paratonic Scale</div>
-    <div style="display:table-cell" class="text-right align-bottom">{$targetChord} </div>
+    <div style="display:table-cell" class="text-right align-center">{$homeKey}</div>
+    <div style="display:table-cell" class="text-right align-center">Paratonic Scale</div>
+    <div style="display:table-cell" class="text-right align-center">{$targetChord} </div>
 </div>
 <div class="basis-5/6 grid grid-cols-12 grid-rows-3 content-center text-center divide-y-4 divide-x-4">
-    {#each homeScaleNotes as note}
-    <div class="col-start-{note.col} row-start-1 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
-    {/each}
-    {#each scaleNotes as note}
-    <div class="col-start-{note.col} row-start-2 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
-    {/each}
-    {#each  chordNotes as note}
-    <div class="col-start-{note.col} row-start-3 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
-    {/each}
     <div class="col-start-1 row-start-1 text-primary-600" > </div>
     <div class="col-start-2 row-start-1 text-secondary-600" > </div>
     <div class="col-start-3 row-start-1 text-tertiary-600" > </div>
@@ -86,5 +77,15 @@ $: scaleNotes = getNotesFromString($resultScale, transposeChroma);
     <div class="col-start-10 row-start-3" > </div>
     <div class="col-start-11 row-start-3" > </div>
     <div class="col-start-12 row-start-3" > </div>
+    {#each homeScaleNotes as note}
+    <div class="table-cell align-center col-start-{note.col} row-start-1 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
+    {/each}
+    {#each scaleNotes as note}
+    <div class="table-cell align-center col-start-{note.col} row-start-2 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
+    {/each}
+    {#each  chordNotes as note}
+    <div class="table-cell align-center col-start-{note.col} row-start-3 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
+    {/each}
+ 
 </div>
 </div>

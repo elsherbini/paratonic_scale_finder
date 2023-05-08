@@ -168,9 +168,8 @@ const playButtonClick = () =>{
 </script>
 
 
-<section class="py-1 px-3 grid grid-cols-1 md:grid-cols-2 justify-start gap-4">
-
-	<div class="card p-3">
+<section class="py-1 px-3 flex flex-row justify-center gap-4 ">
+	<div class="card p-3 basis-full md:basis-1/2 max-w-2xl">
 	<div class="input-group input-group-divider"><label class="label">
 	<span>Home Key</span></label>
 	<div class="input-group-shim">
@@ -194,7 +193,7 @@ const playButtonClick = () =>{
 	<option value="B">B</option>
 </select>
 </div>
-<RadioGroup selected={homeKeyQuality}>
+<RadioGroup display = "block xl:inline-flex" selected={homeKeyQuality}>
 	<RadioItem value="lydian">Lydian</RadioItem>
 	<RadioItem value="major">Major</RadioItem>
 	<RadioItem value="mixolydian">Mixolydian</RadioItem>
@@ -207,17 +206,15 @@ const playButtonClick = () =>{
 <label class="label"><span>Home Key</span></label>
 <h3>{$homeKey} </h3><h2>{homeKeyNotes}</h2>
 </div>
+</div>
+</div>
+</div>
 
-<div class="basis-1/3">
-</div>
-</div>
-</div>
-</div>
-<div class="card p-3">
+<div class="card p-3  basis-full md:basis-1/2 max-w-2xl">
 	<div class="input-group input-group-divider">
 		<label class="label"><span>Sharps or Flats</span></label>
 		<div class="input-group-shim">
-			<RadioGroup selected={sharpsOrFlats}>
+			<RadioGroup display = "block xl:inline-flex" selected={sharpsOrFlats}>
 				<RadioItem value="b">b</RadioItem>
 				<RadioItem value="#">#</RadioItem>
 			</RadioGroup>
@@ -242,7 +239,7 @@ const playButtonClick = () =>{
 			</select>
 			</div>
 		<div class="input-group-shim">
-			<RadioGroup selected={targetChordQuality}>
+			<RadioGroup display = "block xl:inline-flex" selected={targetChordQuality}>
 				<RadioItem value="maj">major</RadioItem>
 				<RadioItem value="m">minor</RadioItem>
 				<RadioItem value="7">Dom7</RadioItem>
@@ -255,7 +252,7 @@ const playButtonClick = () =>{
 	</div>
 </div>
 </section>
-<section class="py-0 px-3 justify-start gap-4">
+<section class="overflow-auto py-0 px-3 justify-start gap-4">
 	<SampleLib
 	  theme="dark"
 	  samplesPath="/audio/rhodes/"
@@ -285,7 +282,7 @@ const playButtonClick = () =>{
 				<div class="input-group input-group-divider ">
 					<label class="label"><span>Sharps or Flats</span></label>
 					<div class="input-group-shim">
-						<RadioGroup selected={sharpsOrFlats}>
+						<RadioGroup display = "block xl:inline-flex" selected={sharpsOrFlats}>
 							<RadioItem value="b">b</RadioItem>
 							<RadioItem value="#">#</RadioItem>
 						</RadioGroup>
@@ -302,13 +299,13 @@ const playButtonClick = () =>{
 		<h3>{resultScaleLabel}</h3> <h2>{$resultScale}</h2> 
 		<div class="input-group-shim ">
 			<label class="label"><span>Start Scale On</span></label>
-			<RadioGroup selected={startScaleOn}>
+			<RadioGroup display = "block xl:inline-flex" selected={startScaleOn}>
 				<RadioItem value="key">Key tonic</RadioItem>
 				<RadioItem value="chord">Chord root</RadioItem>
 			</RadioGroup>
 	
 			<label class="label"><span>Remove augmented 2nds?</span></label>
-			<RadioGroup selected={noAug2nds}>
+			<RadioGroup display = "block xl:inline-flex" selected={noAug2nds}>
 				<RadioItem value={"no"}>No A2nds</RadioItem>
 				<RadioItem value={"yes"}>A2nds</RadioItem>
 			</RadioGroup>
