@@ -42,13 +42,13 @@ $: scaleNotes = getNotesFromString($resultScale, transposeChroma);
 </div>
 <div class="basis-5/6 grid grid-cols-12 grid-rows-3 content-center text-center divide-y-4 divide-x-4">
     {#each homeScaleNotes as note}
-    <div class="col-start-{note.col} row-start-1 text-{note.color}-600 text-2xl">{note.name}</div>
+    <div class="col-start-{note.col} row-start-1 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
     {/each}
     {#each scaleNotes as note}
-    <div class="col-start-{note.col} row-start-2 text-{note.color}-600 text-2xl">{note.name}</div>
+    <div class="col-start-{note.col} row-start-2 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
     {/each}
     {#each  chordNotes as note}
-    <div class="col-start-{note.col} row-start-3 text-{note.color}-600 text-2xl">{note.name}</div>
+    <div class="col-start-{note.col} row-start-3 text-{note.color}-600 text-sm md:text-2xl">{note.name}</div>
     {/each}
     <div class="col-start-1 row-start-1 text-primary-600" > </div>
     <div class="col-start-2 row-start-1 text-secondary-600" > </div>
