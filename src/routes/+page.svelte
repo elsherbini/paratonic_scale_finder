@@ -10,12 +10,12 @@
 	import { get, writable, type Writable } from 'svelte/store';
 	import {makeParatonicScale} from '../lib/paratonic_scales'
 	import { Scale, Chord} from 'tonal';
-	import * as Tone from 'tone';
 	import MdiStop from 'virtual:icons/mdi/stop'
 	import MdiPlay from 'virtual:icons/mdi/play'
 	import MdiVolume from 'virtual:icons/mdi/volume-high'
 
-
+	// Dynamic import for Tone.js to avoid SSR issues
+	let Tone;
 
 
 	let vol;
@@ -28,108 +28,113 @@
 	let timeSig = "4/4"
 
 	async function initTone() {
+		if (!Tone && browser) {
+			Tone = await import('tone');
+		}
+		
+		if (!Tone) return;
+		
 		await Tone.start();
 		toneInitialized = true;
 		
-    if (!Tone.getContext().disposed)
-        Tone.getContext().dispose();
-    // Tone.setContext(new Tone.OfflineContext(1, 0.5, 44100));
-    Tone.setContext(new Tone.Context({ latencyHint: 'interactive', lookAhead: 0 }));
-    // Tone.setContext(new Tone.Context({ latencyHint: 'playback', lookAhead: 5}));
-    Tone.getContext().transport.bpm.value = bpm;
-    Tone.getDestination().volume.value = vol;
-    Tone.getContext().transport.timeSignature = timeSig.split('/').map((t) => parseInt(t));
-	Tone.Transport.setLoopPoints("0m", "4m")
-}
+		if (!Tone.getContext().disposed)
+			Tone.getContext().dispose();
+		// Tone.setContext(new Tone.OfflineContext(1, 0.5, 44100));
+		Tone.setContext(new Tone.Context({ latencyHint: 'interactive', lookAhead: 0 }));
+		// Tone.setContext(new Tone.Context({ latencyHint: 'playback', lookAhead: 5}));
+		Tone.getContext().transport.bpm.value = bpm;
+		Tone.getDestination().volume.value = vol;
+		Tone.getContext().transport.timeSignature = timeSig.split('/').map((t) => parseInt(t));
+		Tone.Transport.setLoopPoints("0m", "4m")
+	}
 	
-const playButtonClick = () =>{
+	const playButtonClick = () =>{
 		if (isPlaying) {
 			sampler.stop()
 			isPlaying = false;
-    	}
-    else {
-		isPlaying = true;
-		sampler.paratonicExample($homeKey, $targetChord, $resultScale)
-    	}
+		}
+		else {
+			isPlaying = true;
+			sampler.paratonicExample($homeKey, $targetChord, $resultScale)
+		}
 	}
 
-  const urls = {
-    A1: "RhodesMK1_A1_60.mp3",
-    A2: "RhodesMK1_A2_70.mp3",
-    A3: "RhodesMK1_A3_70.mp3",
-    A4: "RhodesMK1_A4_60.mp3",
-    A5: "RhodesMK1_A5_60.mp3",
-    A6: "RhodesMK1_A6_70.mp3",
-    "A#1": "RhodesMK1_As1_60.mp3",
-    "A#2": "RhodesMK1_As2_70.mp3",
-    "A#3": "RhodesMK1_As3_70.mp3",
-    "A#4": "RhodesMK1_As4_60.mp3",
-    "A#5": "RhodesMK1_As5_60.mp3",
-    "A#6": "RhodesMK1_As6_70.mp3",
-    B1: "RhodesMK1_B1_60.mp3",
-    B2: "RhodesMK1_B2_70.mp3",
-    B3: "RhodesMK1_B3_70.mp3",
-    B4: "RhodesMK1_B4_70.mp3",
-    B5: "RhodesMK1_B5_60.mp3",
-    B6: "RhodesMK1_B6_60.mp3",
-    C2: "RhodesMK1_C2_60.mp3",
-    C3: "RhodesMK1_C3_70.mp3",
-    C4: "RhodesMK1_C4_70.mp3",
-    C5: "RhodesMK1_C5_60.mp3",
-    C6: "RhodesMK1_C6_60.mp3",
-    C7: "RhodesMK1_C7_60.mp3",
-    "C#2": "RhodesMK1_Cs2_70.mp3",
-    "C#3": "RhodesMK1_Cs3_60.mp3",
-    "C#4": "RhodesMK1_Cs4_60.mp3",
-    "C#5": "RhodesMK1_Cs5_70.mp3",
-    "C#6": "RhodesMK1_Cs6_60.mp3",
-    "C#7": "RhodesMK1_Cs7_60.mp3",
-    D2: "RhodesMK1_D2_70.mp3",
-    D3: "RhodesMK1_D3_60.mp3",
-    D4: "RhodesMK1_D4_60.mp3",
-    D5: "RhodesMK1_D5_70.mp3",
-    D6: "RhodesMK1_D6_60.mp3",
-    D7: "RhodesMK1_D7_60.mp3",
-    "D#2": "RhodesMK1_Ds2_60.mp3",
-    "D#3": "RhodesMK1_Ds3_70.mp3",
-    "D#4": "RhodesMK1_Ds4_60.mp3",
-    "D#5": "RhodesMK1_Ds5_60.mp3",
-    "D#6": "RhodesMK1_Ds6_60.mp3",
-    "D#7": "RhodesMK1_Ds7_60.mp3",
-    E1: "RhodesMK1_E1_60.mp3",
-    E3: "RhodesMK1_E3_70.mp3",
-    E4: "RhodesMK1_E4_60.mp3",
-    E5: "RhodesMK1_E5_60.mp3",
-    E6: "RhodesMK1_E6_60.mp3",
-    E7: "RhodesMK1_E7_70.mp3",
-    F1: "RhodesMK1_F1_60.mp3",
-    F2: "RhodesMK1_F2_70.mp3",
-    F3: "RhodesMK1_F3_60.mp3",
-    F4: "RhodesMK1_F4_60.mp3",
-    F5: "RhodesMK1_F5_70.mp3",
-    F6: "RhodesMK1_F6_60.mp3",
-    "F#1": "RhodesMK1_Fs1_60.mp3",
-    "F#2": "RhodesMK1_Fs2_70.mp3",
-    "F#3": "RhodesMK1_Fs3_70.mp3",
-    "F#4": "RhodesMK1_Fs4_60.mp3",
-    "F#5": "RhodesMK1_Fs5_70.mp3",
-    "F#6": "RhodesMK1_Fs6_60.mp3",
-    G1: "RhodesMK1_G1_60.mp3",
-    G2: "RhodesMK1_G2_70.mp3",
-    G3: "RhodesMK1_G3_70.mp3",
-    G4: "RhodesMK1_G4_80.mp3",
-    G5: "RhodesMK1_G5_60.mp3",
-    G6: "RhodesMK1_G6_60.mp3",
-    "G#1": "RhodesMK1_Gs1_60.mp3",
-    "G#2": "RhodesMK1_Gs2_60.mp3",
-    "G#3": "RhodesMK1_Gs3_60.mp3",
-    "G#4": "RhodesMK1_Gs4_60.mp3",
-    "G#5": "RhodesMK1_Gs5_60.mp3",
-    "G#6": "RhodesMK1_Gs6_70.mp3",
-  };
+	const urls = {
+		A1: "RhodesMK1_A1_60.mp3",
+		A2: "RhodesMK1_A2_60.mp3",
+		A3: "RhodesMK1_A3_70.mp3",
+		A4: "RhodesMK1_A4_60.mp3",
+		A5: "RhodesMK1_A5_60.mp3",
+		A6: "RhodesMK1_A6_70.mp3",
+		"A#1": "RhodesMK1_As1_60.mp3",
+		"A#2": "RhodesMK1_As2_70.mp3",
+		"A#3": "RhodesMK1_As3_70.mp3",
+		"A#4": "RhodesMK1_As4_60.mp3",
+		"A#5": "RhodesMK1_As5_60.mp3",
+		"A#6": "RhodesMK1_As6_70.mp3",
+		B1: "RhodesMK1_B1_60.mp3",
+		B2: "RhodesMK1_B2_70.mp3",
+		B3: "RhodesMK1_B3_70.mp3",
+		B4: "RhodesMK1_B4_70.mp3",
+		B5: "RhodesMK1_B5_60.mp3",
+		B6: "RhodesMK1_B6_60.mp3",
+		C2: "RhodesMK1_C2_60.mp3",
+		C3: "RhodesMK1_C3_70.mp3",
+		C4: "RhodesMK1_C4_70.mp3",
+		C5: "RhodesMK1_C5_60.mp3",
+		C6: "RhodesMK1_C6_60.mp3",
+		C7: "RhodesMK1_C7_60.mp3",
+		"C#2": "RhodesMK1_Cs2_70.mp3",
+		"C#3": "RhodesMK1_Cs3_60.mp3",
+		"C#4": "RhodesMK1_Cs4_60.mp3",
+		"C#5": "RhodesMK1_Cs5_70.mp3",
+		"C#6": "RhodesMK1_Cs6_60.mp3",
+		"C#7": "RhodesMK1_Cs7_60.mp3",
+		D2: "RhodesMK1_D2_70.mp3",
+		D3: "RhodesMK1_D3_60.mp3",
+		D4: "RhodesMK1_D4_60.mp3",
+		D5: "RhodesMK1_D5_70.mp3",
+		D6: "RhodesMK1_D6_60.mp3",
+		D7: "RhodesMK1_D7_60.mp3",
+		"D#2": "RhodesMK1_Ds2_60.mp3",
+		"D#3": "RhodesMK1_Ds3_70.mp3",
+		"D#4": "RhodesMK1_Ds4_60.mp3",
+		"D#5": "RhodesMK1_Ds5_60.mp3",
+		"D#6": "RhodesMK1_Ds6_60.mp3",
+		"D#7": "RhodesMK1_Ds7_60.mp3",
+		E1: "RhodesMK1_E1_60.mp3",
+		E3: "RhodesMK1_E3_70.mp3",
+		E4: "RhodesMK1_E4_60.mp3",
+		E5: "RhodesMK1_E5_60.mp3",
+		E6: "RhodesMK1_E6_60.mp3",
+		E7: "RhodesMK1_E7_70.mp3",
+		F1: "RhodesMK1_F1_60.mp3",
+		F2: "RhodesMK1_F2_70.mp3",
+		F3: "RhodesMK1_F3_60.mp3",
+		F4: "RhodesMK1_F4_60.mp3",
+		F5: "RhodesMK1_F5_70.mp3",
+		F6: "RhodesMK1_F6_60.mp3",
+		"F#1": "RhodesMK1_Fs1_60.mp3",
+		"F#2": "RhodesMK1_Fs2_70.mp3",
+		"F#3": "RhodesMK1_Fs3_70.mp3",
+		"F#4": "RhodesMK1_Fs4_60.mp3",
+		"F#5": "RhodesMK1_Fs5_70.mp3",
+		"F#6": "RhodesMK1_Fs6_60.mp3",
+		G1: "RhodesMK1_G1_60.mp3",
+		G2: "RhodesMK1_G2_70.mp3",
+		G3: "RhodesMK1_G3_70.mp3",
+		G4: "RhodesMK1_G4_80.mp3",
+		G5: "RhodesMK1_G5_60.mp3",
+		G6: "RhodesMK1_G6_60.mp3",
+		"G#1": "RhodesMK1_Gs1_60.mp3",
+		"G#2": "RhodesMK1_Gs2_60.mp3",
+		"G#3": "RhodesMK1_Gs3_60.mp3",
+		"G#4": "RhodesMK1_Gs4_60.mp3",
+		"G#5": "RhodesMK1_Gs5_60.mp3",
+		"G#6": "RhodesMK1_Gs6_70.mp3",
+	};
 
-
-  	
+	
 	const urlKey = $page.url.searchParams.get('k') || "C major"
 	const urlChord = $page.url.searchParams.get('c') || "E7"
 	const urlSharpsOrFlats = $page.url.searchParams.get('a') || "#"
@@ -141,7 +146,7 @@ const playButtonClick = () =>{
 	const targetChordTonic: Writable<string> = writable(Chord.get(urlChord).tonic || "E");
 	const targetChordQuality: Writable<string> = writable(Chord.tokenize(urlChord).slice(-1)[0]);
 	const sharpsOrFlats: Writable<string> = writable(urlSharpsOrFlats);
-    const noAug2nds: Writable<string> = writable(urlNoAug2nds);
+	const noAug2nds: Writable<string> = writable(urlNoAug2nds);
 	
 	$:  homeKey.set([$homeKeyTonic, $homeKeyQuality].join(" "))
 	$:  homeKeyNotes = Scale.get($homeKey).notes.join(" ")
@@ -154,7 +159,7 @@ const playButtonClick = () =>{
 
 	const handleVol = () => {
 		if (browser) {
-			if (toneInitialized) {
+			if (toneInitialized && Tone) {
 				Tone.getDestination().volume.value = vol;
 			}
 			else {
@@ -162,6 +167,7 @@ const playButtonClick = () =>{
 			}
 		}
 	}
+	
 	onMount(() => {
 		initTone()
 	});
@@ -254,12 +260,12 @@ const playButtonClick = () =>{
 </section>
 <section class="max-lg:overflow-x-auto py-0 px-3 justify-start gap-4">
 	<SampleLib
-	  theme="dark"
-	  samplesPath="/audio/rhodes/"
-	  {inputId}
-	  {urls}
-	  bind:this={sampler}
-	  bind:reverbOn
+		theme="dark"
+		samplesPath="/audio/rhodes/"
+		{inputId}
+		{urls}
+		bind:this={sampler}
+		bind:reverbOn
 	/>
 </section>
 <section class="py-3 px-3 content-center">
