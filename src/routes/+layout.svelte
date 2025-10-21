@@ -5,18 +5,10 @@
 	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import DevicePickerWrapper from '$lib/svelte-sampler/components/DevicePickerWrapper.svelte';
 	
 	let storeThree = writable('paratonic');
 	let inputDevice = null;
-	let DevicePicker;
-	
-	onMount(async () => {
-		if (browser) {
-			const module = await import('$lib/svelte-sampler/components/DevicePicker.svelte');
-			DevicePicker = module.default;
-		}
-	});
 </script>
 
 <!-- App Shell -->
@@ -44,10 +36,10 @@
 			<svelte:fragment slot="trail">
 				<div class="flex items-center gap-4">
 					<!-- MIDI Device Picker -->
-					{#if browser && DevicePicker}
+					{#if browser}
 						<div class="flex items-center gap-2">
 							<label class="text-sm">MIDI In:</label>
-							<svelte:component this={DevicePicker} type="input" bind:value={inputDevice} />
+							<DevicePickerWrapper type="input" bind:value={inputDevice} />
 						</div>
 					{/if}
 					<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
