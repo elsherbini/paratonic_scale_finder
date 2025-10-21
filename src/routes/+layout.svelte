@@ -5,7 +5,6 @@
 	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
 	import { browser } from '$app/environment';
-	import DevicePickerWrapper from '$lib/svelte-sampler/components/DevicePickerWrapper.svelte';
 	
 	let storeThree = writable('paratonic');
 	let inputDevice = null;
@@ -35,12 +34,23 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div class="flex items-center gap-4">
-					<!-- MIDI Device Picker -->
+					<!-- MIDI Device Picker - only render on client side -->
 					{#if browser}
-						<div class="flex items-center gap-2">
-							<label class="text-sm">MIDI In:</label>
-							<DevicePickerWrapper type="input" bind:value={inputDevice} />
-						</div>
+						{#await import('$lib/svelte-sampler/components/DevicePicker.svelte')}
+							<div class="flex items-center gap-2">
+								<label class="text-sm">MIDI In:</label>
+								<select disabled class="text-sm bg-surface-700 p-1 rounded">
+									<option>Loading...</option>
+								</select>
+							</div>
+						{:then module}
+							<div class="flex items-center gap-2">
+								<label class="text-sm">MIDI In:</label>
+								<svelte:component this={module.default} type="input" bind:value={inputDevice} />
+							</div>
+						{:catch error}
+							<!-- Silently fail if MIDI not available -->
+						{/await}
 					{/if}
 					<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
 					<LightSwitch />
