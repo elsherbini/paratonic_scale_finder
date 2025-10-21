@@ -4,6 +4,9 @@
 	import '../app.postcss';
 	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
+	import DevicePicker from '$lib/svelte-sampler/components/DevicePicker.svelte';
+
+	let inputDevice = null;
 	let storeThree = writable('paratonic');
 </script>
 
@@ -30,6 +33,12 @@
 			</TabGroup>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+			<div class="flex items-center gap-4">
+					<!-- MIDI Device Picker -->
+					<div class="flex items-center gap-2">
+						<label class="text-sm">MIDI In:</label>
+						<DevicePicker type="input" bind:value={inputDevice} />
+					</div>
 				<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
 				<LightSwitch />
 			</svelte:fragment>
