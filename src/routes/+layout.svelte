@@ -4,10 +4,19 @@
 	import '../app.postcss';
 	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
-	import DevicePicker from '../lib/svelte-sampler/components/DevicePicker.svelte';
-
-	let inputDevice = null;
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+	
 	let storeThree = writable('paratonic');
+	let inputDevice = null;
+	let DevicePicker;
+	
+	onMount(async () => {
+		if (browser) {
+			const module = await import('$lib/svelte-sampler/components/DevicePicker.svelte');
+			DevicePicker = module.default;
+		}
+	});
 </script>
 
 <!-- App Shell -->
@@ -33,14 +42,17 @@
 			</TabGroup>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-			<div class="flex items-center gap-4">
+				<div class="flex items-center gap-4">
 					<!-- MIDI Device Picker -->
-					<div class="flex items-center gap-2">
-						<label class="text-sm">MIDI In:</label>
-						<DevicePicker type="input" bind:value={inputDevice} />
-					</div>
-				<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
-				<LightSwitch />
+					{#if browser && DevicePicker}
+						<div class="flex items-center gap-2">
+							<label class="text-sm">MIDI In:</label>
+							<svelte:component this={DevicePicker} type="input" bind:value={inputDevice} />
+						</div>
+					{/if}
+					<a class="btn btn-sm btn-ghost-surface" href="https://github.com/elsherbini/paratonic_scale_finder" target="_blank" rel="noreferrer">GitHub</a>
+					<LightSwitch />
+				</div>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
