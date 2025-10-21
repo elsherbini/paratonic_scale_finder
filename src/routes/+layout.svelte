@@ -4,7 +4,7 @@
 	import '../app.postcss';
 	import { AppShell, AppBar, LightSwitch, TabGroup, Tab} from '@skeletonlabs/skeleton';
 	import { writable, type Writable } from 'svelte/store';
-	import DevicePicker from '$lib/svelte-sampler/components/DevicePicker.svelte';
+	import DevicePicker from '../lib/svelte-sampler/components/DevicePicker.svelte';
 
 	let inputDevice = null;
 	let storeThree = writable('paratonic');
